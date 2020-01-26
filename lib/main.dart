@@ -1,5 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:screenshot/screenshot.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'dart:io';
 
 void main() => runApp(MyApp());
 
@@ -25,7 +29,9 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  File _imageFile = null;
   int bottomTabBarIndex = 0;
+  ScreenshotController screenshotController = ScreenshotController();
 
   incrementBottomTabBarIndex(index) {
     setState(() {
@@ -33,26 +39,33 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
-
     double deviceWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: Center(child: createCanvas(deviceWidth)),
+      body: Center(
+          child: Screenshot(
+              controller: screenshotController,
+              child: createCanvas(deviceWidth))),
       bottomNavigationBar: Container(
         height: 50.0,
         color: Colors.white70,
         child: Row(
           children: <Widget>[
             Expanded(
-              child: Container(
-                height: 50.0,
-                child: Center(child: Icon(Icons.save_alt)),
+              child: InkWell(
+                onTap: () {
+                  print("image capturing start...");
+                  takeScreenShot();
+                },
+                child: Container(
+                  height: 50.0,
+                  child: Center(child: Icon(Icons.save_alt)),
+                ),
               ),
             ),
             Expanded(
@@ -68,7 +81,6 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget createCanvas(double deviceWidth) {
-
     double canvasSize = deviceWidth - 50.0;
 
     return Container(
@@ -77,7 +89,7 @@ class _MyHomePageState extends State<MyHomePage> {
       child: Column(
         children: <Widget>[
           Container(
-            height: canvasSize/2,
+            height: canvasSize / 2,
             child: Row(
               children: <Widget>[
                 Expanded(
@@ -96,24 +108,43 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ),
           Container(
-            height: canvasSize/2,
-            child: Row(children: <Widget>[
-              Expanded(
-                child: Container(
-                  color: Colors.amber,
-                  child: Center(child: Text('C')),
+            height: canvasSize / 2,
+            child: Row(
+              children: <Widget>[
+                Expanded(
+                  child: Container(
+                    color: Colors.amber,
+                    child: Center(child: Text('C')),
+                  ),
                 ),
-              ),
-              Expanded(
-                child: Container(
-                  color: Colors.amberAccent,
-                  child: Center(child: Text('D')),
+                Expanded(
+                  child: Container(
+                    color: Colors.amberAccent,
+                    child: Center(child: Text('D')),
+                  ),
                 ),
-              ),
-            ],),
+              ],
+            ),
           )
         ],
       ),
     );
+  }
+
+  void takeScreenShot() async {
+
+    final directory = (await getApplicationDocumentsDirectory ()).path; //from path_provide package
+    String fileName = DateTime.now().toIso8601String();
+    final path = '$directory/$fileName.png';
+
+    screenshotController.capture(path: path, pixelRatio: 50.0).then((File imageFile) async {
+      setState(() {
+        _imageFile = imageFile;
+      });
+
+      final result =
+          await ImageGallerySaver.saveImage(_imageFile.readAsBytesSync());
+      print('image has been saved');
+    });
   }
 }
