@@ -79,6 +79,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+
   @override
   Widget build(BuildContext context) {
     double deviceWidth = MediaQuery.of(context).size.width;
@@ -146,16 +147,23 @@ class _MyHomePageState extends State<MyHomePage> {
                       children: <Widget>[
                         Container(
                           color: Color(0xFFF5DCC7),
-                          child: Center(child: Text('1')),
+                          child: Center(child: Text('')),
                         ),
                         _1stImageFile == null
-                            ? Text('')
+                            ? getCameraIcon()
                             : Positioned.fill(
                                 child: Image.file(
                                   _1stImageFile,
                                   fit: BoxFit.cover,
                                 ),
                               ),
+                        Positioned.fill(
+                          bottom: 5.0,
+                          child: Align(
+                            alignment: Alignment.bottomCenter,
+                            child: getImageTypeText('LINKEDIN'),
+                          ),
+                        )
                       ],
                     ),
                   ),
@@ -169,16 +177,23 @@ class _MyHomePageState extends State<MyHomePage> {
                       children: <Widget>[
                         Container(
                           color: Color(0xFFD2F3DF),
-                          child: Center(child: Text('2')),
+                          child: Center(child: Text('')),
                         ),
                         _2ndImageFile == null
-                            ? Text('')
+                            ? getCameraIcon()
                             : Positioned.fill(
                                 child: Image.file(
                                   _2ndImageFile,
                                   fit: BoxFit.cover,
                                 ),
                               ),
+                        Positioned.fill(
+                          bottom: 5.0,
+                          child: Align(
+                            alignment: Alignment.bottomCenter,
+                            child: getImageTypeText('FACEBOOK'),
+                          ),
+                        )
                       ],
                     ),
                   ),
@@ -199,16 +214,23 @@ class _MyHomePageState extends State<MyHomePage> {
                       children: <Widget>[
                         Container(
                           color: Color(0xFFD5E8F8),
-                          child: Center(child: Text('3')),
+                          child: Center(child: Text('')),
                         ),
                         _3rdImageFile == null
-                            ? Text('')
+                            ? getCameraIcon()
                             : Positioned.fill(
                                 child: Image.file(
                                   _3rdImageFile,
                                   fit: BoxFit.cover,
                                 ),
                               ),
+                        Positioned.fill(
+                          bottom: 5.0,
+                          child: Align(
+                            alignment: Alignment.bottomCenter,
+                            child: getImageTypeText('INSTAGRAM'),
+                          ),
+                        )
                       ],
                     ),
                   ),
@@ -222,16 +244,23 @@ class _MyHomePageState extends State<MyHomePage> {
                       children: <Widget>[
                         Container(
                           color: Color(0xFFFCDFFF),
-                          child: Center(child: Text('4')),
+                          child: Center(child: Text('')),
                         ),
                         _4thImageFile == null
-                            ? Text('')
+                            ? getCameraIcon()
                             : Positioned.fill(
                                 child: Image.file(
                                   _4thImageFile,
                                   fit: BoxFit.cover,
                                 ),
                               ),
+                        Positioned.fill(
+                          bottom: 5.0,
+                          child: Align(
+                            alignment: Alignment.bottomCenter,
+                            child: getImageTypeText('TINDER'),
+                          ),
+                        )
                       ],
                     ),
                   ),
@@ -241,6 +270,31 @@ class _MyHomePageState extends State<MyHomePage> {
           )
         ],
       ),
+    );
+  }
+
+  Widget getCameraIcon() {
+    return Center(
+      child: Icon(
+        Icons.camera_alt,
+        color: Colors.black38,
+      ),
+    );
+  }
+
+  Widget getImageTypeText(String text) {
+    return Text(
+      text,
+      style: TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+          fontSize: 20.0,
+          shadows: <Shadow>[
+            Shadow(
+                offset: Offset(1.0, 1.0),
+                blurRadius: 2.0,
+                color: Colors.black.withOpacity(0.9))
+          ]),
     );
   }
 
