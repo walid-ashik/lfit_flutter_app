@@ -1,10 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:progress_dialog/progress_dialog.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
+import 'package:esys_flutter_share/esys_flutter_share.dart';
 
 void main() => runApp(MyApp());
 
@@ -30,6 +33,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  ProgressDialog _progressDialog;
   File _finalImageFile = null;
   int bottomTabBarIndex = 0;
   ScreenshotController screenshotController = ScreenshotController();
@@ -79,10 +83,15 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     double deviceWidth = MediaQuery.of(context).size.width;
+
+    _progressDialog = ProgressDialog(context,
+        type: ProgressDialogType.Normal, isDismissible: false, showLogs: true);
+    _progressDialog.style(
+      message: 'Saving your image...',
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -94,34 +103,17 @@ class _MyHomePageState extends State<MyHomePage> {
               child: createCanvas(deviceWidth))),
       bottomNavigationBar: Container(
         height: 50.0,
-        color: Colors.white70,
-        child: Row(
-          children: <Widget>[
-            Expanded(
-              child: InkWell(
-                onTap: () {
-                  print("image capturing start...");
-                  takeScreenShot();
-                },
-                child: Container(
-                  height: 50.0,
-                  child: Center(child: Icon(Icons.save_alt)),
-                ),
-              ),
-            ),
-            Expanded(
-              child: InkWell(
-                onTap: () {
-                  print('share icon clicked');
-                },
-                child: Container(
-                  height: 50.0,
-                  child: Center(child: Icon(Icons.share)),
-                ),
-              ),
-            ),
-          ],
-        ),
+        child: InkWell(
+            onTap: () {
+              takeScreenShot();
+            },
+            child: Container(
+              color: Colors.blue,
+              child: Center(
+                  child: Text('SAVE & SHARE',
+                      style: TextStyle(
+                          color: Colors.white, fontSize: 16.0, fontWeight: FontWeight.bold))),
+            )),
       ),
     );
   }
@@ -299,13 +291,15 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void takeScreenShot() async {
+    _progressDialog.show();
+
     final directory = (await getApplicationDocumentsDirectory())
         .path; //from path_provide package
     String fileName = DateTime.now().toIso8601String();
     final path = '$directory/$fileName.png';
 
     screenshotController
-        .capture(path: path, pixelRatio: 5.0)
+        .capture(path: path, pixelRatio: 2.0)
         .then((File imageFile) async {
       setState(() {
         _finalImageFile = imageFile;
@@ -313,6 +307,15 @@ class _MyHomePageState extends State<MyHomePage> {
 
       final result =
           await ImageGallerySaver.saveImage(_finalImageFile.readAsBytesSync());
+
+      print('image location: $result');
+      _progressDialog.hide();
+
+      final ByteData bytes = await rootBundle.load(path);
+      await Share.file(
+          'esys image', 'esys.png', bytes.buffer.asUint8List(), 'image/png',
+          text: 'My optional text.');
+
       print('image has been saved');
     });
   }
