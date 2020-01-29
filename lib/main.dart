@@ -16,10 +16,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'LFIT Demo',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'LFIT'),
+      home: MyHomePage(title: 'Photo Meme Creator'),
     );
   }
 }
@@ -259,7 +260,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ],
             ),
-          )
+          ),
         ],
       ),
     );
@@ -268,7 +269,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget getCameraIcon() {
     return Center(
       child: Icon(
-        Icons.camera_alt,
+        Icons.image,
         color: Colors.black38,
       ),
     );
